@@ -7,19 +7,14 @@ import {
   getLastUpdatedRepositories,
 } from "@/lib/utils";
 import Link from "next/link";
-import { FC } from "react";
 import LastUpdatedRepositories from "@/components/LastUpdatedRepositories";
 
-interface Params {
-  params: {
-    username: string;
-  };
-}
-
-const ResumePage: FC<Params> = async (props) => {
-  const params = await props.params;
-  const { username } = params;
-
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ username: string }>;
+}) {
+  const username = (await params).username;
   const user = await githubApi.getUser(username);
 
   if (!user || "error" in user) {
@@ -62,6 +57,4 @@ const ResumePage: FC<Params> = async (props) => {
       )}
     </section>
   );
-};
-
-export default ResumePage;
+}

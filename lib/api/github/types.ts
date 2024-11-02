@@ -1,3 +1,4 @@
+/* eslint-disable */
 export interface GithubUser {
   login: string;
   id: number;

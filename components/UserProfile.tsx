@@ -1,6 +1,5 @@
 import { Avatar } from "@/components/ui/avatar";
 import { AvatarImage } from "@radix-ui/react-avatar";
-import Link from "next/link";
 
 interface UserProfileProps {
   user: {

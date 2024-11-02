@@ -1,5 +1,4 @@
 import { clsx, type ClassValue } from "clsx";
-import { useMemo } from "react";
 import { twMerge } from "tailwind-merge";
 import { UserRepository } from "./api/github/types";
 
