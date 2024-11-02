@@ -113,7 +113,3 @@ export interface UserRepository {
   watchers: number;
   default_branch: string;
 }
-
-export interface NotFound {
-  error: unknown;
-}

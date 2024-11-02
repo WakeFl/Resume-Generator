@@ -24,6 +24,11 @@ const Form: React.FC = () => {
         placeholder="Enter your GitHub username and click on generate"
         value={username}
         onChange={handleChange}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            handleGenerate();
+          }
+        }}
       />
       <Button variant="secondary" onClick={handleGenerate}>
         Generate

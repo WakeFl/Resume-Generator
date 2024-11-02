@@ -20,13 +20,15 @@ const ResumePage: FC<Params> = async (props) => {
   const params = await props.params;
   const { username } = params;
 
-  const response = await githubApi.getUser(username);
+  const user = await githubApi.getUser(username);
 
-  if (!response || "error" in response) {
+  if (!user || "error" in user) {
     return (
-      <section>
+      <section className="text-center">
         <h1 className="font-semibold text-xl">User {username} not found</h1>
-        <Link href={"/"}>Return to Home Page</Link>
+        <Link className="text-cyan-500 my-4 block" href={"/"}>
+          Return to Home Page
+        </Link>
       </section>
     );
   }
@@ -40,21 +42,20 @@ const ResumePage: FC<Params> = async (props) => {
       <Link className="text-cyan-500 mb-4 block" href={"/"}>
         / Home
       </Link>
-      <UserProfile response={response} />
+      <UserProfile user={user} />
       <hr className="my-8" />
-      {response.created_at && (
+      {user.created_at && (
         <div>
           <h2 className="font-semibold text-l mb-4">Profile</h2>
           <p>
-            On GitHub since {formatReadableDate(response.created_at)},{" "}
-            {response.name} is a developer based in{" "}
-            {response.location || "Location not available"} with{" "}
-            {response.public_repos || 0} public repositories.
+            On GitHub since {formatReadableDate(user.created_at)}, {user.name}{" "}
+            is a developer based in {user.location || "Location not available"}{" "}
+            with {user.public_repos || 0} public repositories.
           </p>
         </div>
       )}
       {statistic.length > 0 && (
-        <LanguageStatistics statistics={statistic} login={response.login} />
+        <LanguageStatistics statistics={statistic} login={user.login} />
       )}
       {lastRepos.length > 0 && (
         <LastUpdatedRepositories repositories={lastRepos} />
