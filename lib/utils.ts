@@ -39,3 +39,13 @@ export function getLanguagesStatistic(
 
   return [];
 }
+
+export function getLastUpdatedRepositories(
+  query: UserRepository[]
+): UserRepository[] {
+  const sortedRepositories = query.sort((a, b) => {
+    return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+  });
+
+  return sortedRepositories.slice(0, 5);
+}

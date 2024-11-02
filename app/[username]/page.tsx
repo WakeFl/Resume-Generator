@@ -1,9 +1,14 @@
-import { Avatar } from "@/components/ui/avatar";
+import UserProfile from "@/components/UserProfile";
+import LanguageStatistics from "@/components/LanguageStatistics";
 import { githubApi } from "@/lib/api/github";
-import { formatReadableDate, getLanguagesStatistic } from "@/lib/utils";
-import { AvatarImage } from "@radix-ui/react-avatar";
-import { Languages } from "lucide-react";
+import {
+  formatReadableDate,
+  getLanguagesStatistic,
+  getLastUpdatedRepositories,
+} from "@/lib/utils";
+import Link from "next/link";
 import { FC } from "react";
+import LastUpdatedRepositories from "@/components/LastUpdatedRepositories";
 
 interface Params {
   params: {
@@ -14,53 +19,46 @@ interface Params {
 const ResumePage: FC<Params> = async (props) => {
   const params = await props.params;
   const { username } = params;
+
   const response = await githubApi.getUser(username);
 
-  if (!response) {
+  if (!response || "error" in response) {
     return (
       <section>
         <h1 className="font-semibold text-xl">User {username} not found</h1>
+        <Link href={"/"}>Return to Home Page</Link>
       </section>
     );
   }
 
   const repositories = await githubApi.getRepositories(username);
-
+  const lastRepos = getLastUpdatedRepositories(repositories);
   const statistic = getLanguagesStatistic(repositories);
-  console.log(statistic);
+
   return (
     <section>
-      <div className="flex justify-between">
-        <div className="flex flex-col">
-          <h1 className="font-semibold text-xl mb-2">{response?.name}</h1>
-          <h2 className="font-semibold text-l mb-2">{response?.login}</h2>
-          <span>{response?.location}</span>
-          <a className=" text-cyan-500 mt-2" href={response?.html_url}>
-            GitHub
-          </a>
+      <Link className="text-cyan-500 mb-4 block" href={"/"}>
+        / Home
+      </Link>
+      <UserProfile response={response} />
+      <hr className="my-8" />
+      {response.created_at && (
+        <div>
+          <h2 className="font-semibold text-l mb-4">Profile</h2>
+          <p>
+            On GitHub since {formatReadableDate(response.created_at)},{" "}
+            {response.name} is a developer based in{" "}
+            {response.location || "Location not available"} with{" "}
+            {response.public_repos || 0} public repositories.
+          </p>
         </div>
-        {response?.avatar_url && (
-          <Avatar className="w-28 h-28">
-            <AvatarImage src={response?.avatar_url} />
-          </Avatar>
-        )}
-      </div>
-      <hr className="my-8" />
-      <div>
-        <p>
-          On GitHub since {formatReadableDate(response?.created_at)},{" "}
-          {response.name} is a developer based in {response?.location} with{" "}
-          {response?.public_repos} public repositories.
-        </p>
-      </div>
-      <hr className="my-8" />
-      <div>
-        {statistic.map((language) => (
-          <div className="mt-2" key={language.name}>
-            {language.name}({language.value}%)
-          </div>
-        ))}
-      </div>
+      )}
+      {statistic.length > 0 && (
+        <LanguageStatistics statistics={statistic} login={response.login} />
+      )}
+      {lastRepos.length > 0 && (
+        <LastUpdatedRepositories repositories={lastRepos} />
+      )}
     </section>
   );
 };
